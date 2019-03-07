@@ -6,10 +6,10 @@ $PreviousDay = (Get-Date).AddDays(-1).ToString("yyyyMMdd")
 $ProductionBackupPath = '\\ohsql8510\Backup\OHSQL8500C$TAMZ_DemoHA\AdventureWorks2012\FULL\'
 $DatabaseName = 'AdventureWorks2012'
 $ProductionbDBFilename = "$($DatabaseName)_Full_$($PreviousDay)_*.bak"
-$ProductionFilePath = '\\ohsql8510\Files\AdventureWorksFiles'
-$FilePattern = '*.txt'
 $ProductionBackupFile = Join-Path $ProductionBackupPath $ProductionbDBFilename
-
+#Removed reference as copy will occur with SSIS or ADF
+#$ProductionFilePath = '\\ohsql8510\Files\AdventureWorksFiles'
+#$FilePattern = '*.txt'
 
 #Staging and Utility Server
 $StagingSQLServer = 'OHSQL8512'
@@ -32,7 +32,8 @@ $AzureDBArchivedPath = Join-Path "\\$AzureDBServer" -ChildPath $ScrubbedArchiveP
 
 #Copy Production Backup and Channel Files to Staging Area 
 Copy-Item $ProductionBackupFile -Destination $StagingBackupDestination
-Copy-Item $ProductionFilePath -Filter $FilePattern  -Destination $StagingFileDestination -Recurse
+#Removed reference as copy will occur with SSIS or ADF
+#Copy-Item $ProductionFilePath -Filter $FilePattern  -Destination $StagingFileDestination -Recurse
 
 #Restore Production Backup on Staging Server
 get-childitem $StagingBackupDestination | Restore-DbaDatabase -SqlInstance $StagingSQLServer -WithReplace
@@ -96,7 +97,7 @@ else
 {Write-Error "Restore of $RestoreResult.Database Failed." }
 
 
-
+#If we were going to copy to Blob using AZCopy the following would be leveraged
 #Copy Files to Azure Files
 #$AzureFileShare = ''
 #$AzureFilesShareKey = ''
