@@ -30,7 +30,7 @@ $AzureDBScrubbedPath = Join-Path "\\$AzureDBServer" -ChildPath $ScrubbedSharePat
 $AzureDBArchivedPath = Join-Path "\\$AzureDBServer" -ChildPath $ScrubbedArchivePath
 #$Cred =Get-Credential
 
-#Copy Production Backup and Channel Files to Staging Area 
+#Copy Production Backup and Files to Staging Area 
 Copy-Item $ProductionBackupFile -Destination $StagingBackupDestination
 #Removed reference as copy will occur with SSIS or ADF
 #Copy-Item $ProductionFilePath -Filter $FilePattern  -Destination $StagingFileDestination -Recurse
