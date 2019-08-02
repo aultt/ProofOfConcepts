@@ -19,22 +19,16 @@ using Microsoft.SqlServer.Management.AlwaysEncrypted.AzureKeyVaultProvider;
 
 namespace ContosoClinic
 {
-    public partial class Startup
+    public partial class StartupKeyVault
     {
-        public async static Task<string> GetToken(string authority, string resource, string scope)
+        public static void InitializeAzureKeyVaultProvider()
         {
-            var authContext = new AuthenticationContext(authority);
             AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
-            string accessToken = azureServiceTokenProvider.GetAccessTokenAsync("https://tamz-demovault.vault.azure.net/").Result;
-            AuthenticationResult result = await authContext.AcquireTokenAsync(resource, _clientCredential);
-            if (result == null) throw new InvalidOperationException("Failed to obtain the access token"); return result.AccessToken;
-        }
 
-        static void InitializeAzureKeyVaultProvider()
-        {
+
 
             SqlColumnEncryptionAzureKeyVaultProvider azureKeyVaultProvider =
-               new SqlColumnEncryptionAzureKeyVaultProvider(accessToken);
+               new SqlColumnEncryptionAzureKeyVaultProvider(GetToken);
 
             Dictionary<string, SqlColumnEncryptionKeyStoreProvider> providers =
                new Dictionary<string, SqlColumnEncryptionKeyStoreProvider>();
@@ -43,6 +37,15 @@ namespace ContosoClinic
             SqlConnection.RegisterColumnEncryptionKeyStoreProviders(providers);
         }
 
+        public async static Task<string> GetToken(string authority, string resource, string scope)
+        {
+            AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
+
+            var keyVaultClient = new KeyVaultClient(
+                    new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+
+            return await azureServiceTokenProvider.GetAccessTokenAsync(authority, resource);
+        }
     }
 
 }
