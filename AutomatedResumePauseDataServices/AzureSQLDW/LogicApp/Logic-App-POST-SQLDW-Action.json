@@ -1,0 +1,49 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "HTTP": {
+                "inputs": {
+                    "authentication": {
+                        "type": "ManagedServiceIdentity"
+                    },
+                    "method": "POST",
+                    "uri": "https://management.azure.com/subscriptions/@{triggerBody()?['Subscription']}/resourceGroups/@{triggerBody()?['ResourceGroup']}/providers/Microsoft.Sql/servers/@{triggerBody()?['SqlServer']}/databases/@{triggerBody()?['database']}/@{triggerBody()?['Action']}?api-version=2014-04-01-preview"
+                },
+                "runAfter": {},
+                "type": "Http"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {},
+        "triggers": {
+            "manual": {
+                "inputs": {
+                    "schema": {
+                        "properties": {
+                            "Action": {
+                                "type": "string"
+                            },
+                            "ResourceGroup": {
+                                "type": "string"
+                            },
+                            "SqlServer": {
+                                "type": "string"
+                            },
+                            "Subscription": {
+                                "type": "string"
+                            },
+                            "database": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "kind": "Http",
+                "type": "Request"
+            }
+        }
+    }
+}

@@ -1,0 +1,135 @@
+{
+    "name": "Invoke_Action_on_AAS",
+    "properties": {
+        "description": "Current Actions supported: Suspend and Resume",
+        "activities": [
+            {
+                "name": "Until AAS Action Complete",
+                "type": "Until",
+                "dependsOn": [],
+                "userProperties": [],
+                "typeProperties": {
+                    "expression": {
+                        "value": "@equals(if(equals('Suspend',pipeline().parameters.Action),'Paused','Succeeded'),activity('Get AAS State').output.properties.state)",
+                        "type": "Expression"
+                    },
+                    "activities": [
+                        {
+                            "name": "Get AAS State",
+                            "type": "WebActivity",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "7.00:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "url": {
+                                    "value": "@pipeline().parameters.GetSQLDWURLState",
+                                    "type": "Expression"
+                                },
+                                "method": "POST",
+                                "body": {
+                                    "value": "{\n\"Subscription\" : \"@{pipeline().parameters.Subscription}\",\n\"ResourceGroup\" : \"@{pipeline().parameters.ResourceGroup}\",\n\"ServerName\" : \"@{pipeline().parameters.ServerName}\"\n}",
+                                    "type": "Expression"
+                                }
+                            }
+                        },
+                        {
+                            "name": "Wait 30 Sec",
+                            "type": "Wait",
+                            "dependsOn": [
+                                {
+                                    "activity": "If Action Not Equal Invoke",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "waitTimeInSeconds": 30
+                            }
+                        },
+                        {
+                            "name": "If Action Not Equal Invoke",
+                            "type": "IfCondition",
+                            "dependsOn": [
+                                {
+                                    "activity": "Get AAS State",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "expression": {
+                                    "value": "@equals(if(equals('Resume',pipeline().parameters.Action),'Paused','Succeeded'),activity('Get AAS State').output.properties.state)",
+                                    "type": "Expression"
+                                },
+                                "ifTrueActivities": [
+                                    {
+                                        "name": "Invoke Action",
+                                        "type": "WebActivity",
+                                        "dependsOn": [],
+                                        "policy": {
+                                            "timeout": "7.00:00:00",
+                                            "retry": 3,
+                                            "retryIntervalInSeconds": 30,
+                                            "secureOutput": false,
+                                            "secureInput": false
+                                        },
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "url": {
+                                                "value": "@pipeline().parameters.PostSQLDWAction",
+                                                "type": "Expression"
+                                            },
+                                            "method": "POST",
+                                            "body": {
+                                                "value": "{\n\"Subscription\" : \"@{pipeline().parameters.Subscription}\",\n\"ResourceGroup\" : \"@{pipeline().parameters.ResourceGroup}\",\n\"ServerName\" : \"@{pipeline().parameters.ServerName}\",\n\"Action\" : \"@{pipeline().parameters.Action}\"\n}",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "timeout": "7.00:00:00"
+                }
+            }
+        ],
+        "parameters": {
+            "GetSQLDWURLState": {
+                "type": "string",
+                "defaultValue": "https://{Your-Logic-App-HTTP-POST_URL}"
+            },
+            "PostSQLDWAction": {
+                "type": "string",
+                "defaultValue":  "https://{Your-Logic-App-HTTP-POST_URL}"
+            },
+            "Subscription": {
+                "type": "string",
+                "defaultValue": "Your Subscription GUID"
+            },
+            "ResourceGroup": {
+                "type": "string",
+                "defaultValue": "Your Resource Group"
+            },
+            "ServerName": {
+                "type": "string",
+                "defaultValue": "Your Server Name"
+            },
+            "Action": {
+                "type": "string"
+            }
+        },
+        "annotations": []
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

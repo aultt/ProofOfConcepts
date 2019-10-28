@@ -1,0 +1,140 @@
+{
+    "name": "Invoke_Action_on_IR",
+    "properties": {
+        "description": "Execute Start or Stop action on Integration Runtime provided ",
+        "activities": [
+            {
+                "name": "Loop Until Action matches",
+                "type": "Until",
+                "dependsOn": [],
+                "userProperties": [],
+                "typeProperties": {
+                    "expression": {
+                        "value": "@equals(if(equals('start',pipeline().parameters.Action),'Started','Stopped'),activity('Check IR Status').output.properties.state)",
+                        "type": "Expression"
+                    },
+                    "activities": [
+                        {
+                            "name": "If Action not equal invoke",
+                            "type": "IfCondition",
+                            "dependsOn": [
+                                {
+                                    "activity": "Check IR Status",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "expression": {
+                                    "value": "@equals(if(equals('start',pipeline().parameters.Action),'Stopped','Started'),activity('Check IR Status').output.properties.state)",
+                                    "type": "Expression"
+                                },
+                                "ifTrueActivities": [
+                                    {
+                                        "name": "Invoke Action",
+                                        "description": "Invoke Action on IR",
+                                        "type": "WebActivity",
+                                        "dependsOn": [],
+                                        "policy": {
+                                            "timeout": "7.00:00:00",
+                                            "retry": 0,
+                                            "retryIntervalInSeconds": 30,
+                                            "secureOutput": false,
+                                            "secureInput": false
+                                        },
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "url": {
+                                                "value": "@pipeline().parameters.PostActionURL",
+                                                "type": "Expression"
+                                            },
+                                            "method": "POST",
+                                            "body": {
+                                                "value": "{\n\"Subscription\":\"@{pipeline().parameters.Subscription}\",\n\"ResourceGroup\":\"@{pipeline().parameters.ResourceGroup}\",\n\"DataFactory\":\"@{pipeline().parameters.DataFactory}\",\n\"IRName\":\"@{pipeline().parameters.IRName}\",\n\"Action\":\"@{pipeline().parameters.Action}\"\n}",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Check IR Status",
+                            "type": "WebActivity",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "7.00:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "url": {
+                                    "value": "@pipeline().parameters.GetStatusURL",
+                                    "type": "Expression"
+                                },
+                                "method": "POST",
+                                "body": {
+                                    "value": "{\n\"Subscription\":\"@{pipeline().parameters.Subscription}\",\n\"ResourceGroup\":\"@{pipeline().parameters.ResourceGroup}\",\n\"DataFactory\":\"@{pipeline().parameters.DataFactory}\",\n\"IRName\":\"@{pipeline().parameters.IRName}\",\n\"Action\":\"getstatus\"\n}\n",
+                                    "type": "Expression"
+                                }
+                            }
+                        },
+                        {
+                            "name": "Wait 1 min",
+                            "type": "Wait",
+                            "dependsOn": [
+                                {
+                                    "activity": "If Action not equal invoke",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "waitTimeInSeconds": 60
+                            }
+                        }
+                    ],
+                    "timeout": "7.00:00:00"
+                }
+            }
+        ],
+        "parameters": {
+            "Subscription": {
+                "type": "string",
+                "defaultValue": "Your Subscription ID"
+            },
+            "ResourceGroup": {
+                "type": "string",
+                "defaultValue": "Your Resource Group"
+            },
+            "DataFactory": {
+                "type": "string",
+                "defaultValue": "Your DataFactory Name"
+            },
+            "IRName": {
+                "type": "string",
+                "defaultValue": "Your IR Name"
+            },
+            "Action": {
+                "type": "string"
+            },
+            "GetStatusURL": {
+                "type": "string",
+                "defaultValue": "https://{Your-Logic-App-HTTP-POST_URL}"
+            },
+            "PostActionURL": {
+                "type": "string",
+                "defaultValue": "https://{Your-Logic-App-HTTP-POST_URL}"
+            }
+        },
+        "annotations": []
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
