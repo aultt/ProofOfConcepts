@@ -1,3 +1,15 @@
+If(Get-Module -ListAvailable -Name "dbatools"){'Module is installed'}
+Else{throw "Module dbatools is NOT installed"}
+#If module doesnt exist you can install with below command
+#Install-module dbatools
+If(Get-Module -ListAvailable -Name "Az.keyvault"){'Module is installed'}
+Else{throw 'Module az is NOT installed'}
+#If module doesnt exist you can install with below command
+#Install-module Az.KeyVault
+
+#This module leverages AZCopy version 8.1
+#https://aka.ms/downloadazcopy
+
 
 #Variables for user to define
 $sourceInstance = "OHSQL8512"
@@ -18,9 +30,6 @@ $sqlMICred = New-Object System.Management.Automation.PSCredential ($sqlMISaName.
 $azureFileShare = Get-AzKeyVaultSecret -VaultName $keyVaultName -Name $sqlFileShareURLSecret
 $azureFilesShareKey = Get-AzKeyVaultSecret -VaultName $keyVaultName -Name $sqlFileShareKeySecret
 $currentDay = (Get-Date).ToString("yyyyMMdd")
-
-Backup-Dbadatabase -SqlInstance $sourceInstance -Database $databases -BackupFileName $dbFilename -BackupDirectory $sourceBackupDestination -Type FULL -ReplaceInName -WithFormat -CompressBackup
-    
 
 Foreach ($DB in $Databases)
 {
