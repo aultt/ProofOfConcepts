@@ -14,7 +14,7 @@ Else{throw 'Module az is NOT installed'}
 #Variables for user to define
 $sourceInstance = "OHSQL8512"
 $sourceBackupDestination = '\\ohsql8512\e$\Staging\Backup'
-$databases = 'DataExfil','AlwaysEncrypted'
+$databases = 'myTDETest1','myTDETest2'
 $filePattern = "*.bak"
 $destinationInstance = 'tamzsqlmieast.9f87b0bfc7d9.database.windows.net'
 $keyVaultName = 'TAMZ-MS-KeyVault'
