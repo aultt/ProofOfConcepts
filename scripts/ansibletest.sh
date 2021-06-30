@@ -37,4 +37,4 @@ wget https://raw.githubusercontent.com/ansible-collections/azure/dev/requirement
 # Install Ansible modules
 sudo pip3 install -r requirements-azure.txt
 
-ansible-playbook -i $PIP, -u $USER --private-key $KEY Configure-ASM-server.yml -e gridpass=$GRIDPASS -e oraclepass=$ORACLEPASS -e rootpass=$ROOTPASS -e swapsize=$SWAPSIZE -e gridurl=$gridurl -e syspass=$SYSPASS -e systempass=$SYSTEMPASS -e monitorpass=$MONITORPASS -e dbname=$DBNAME
+ansible-playbook -i $PIP, -u $USER Configure-ASM-server.yml -e gridpass=$GRIDPASS -e oraclepass=$ORACLEPASS -e rootpass=$ROOTPASS -e swapsize=$SWAPSIZE -e gridurl=$gridurl -e syspass=$SYSPASS -e systempass=$SYSTEMPASS -e monitorpass=$MONITORPASS -e dbname=$DBNAME
