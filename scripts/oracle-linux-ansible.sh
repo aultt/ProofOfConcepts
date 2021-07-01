@@ -35,7 +35,7 @@ wget https://raw.githubusercontent.com/ansible-collections/azure/dev/requirement
 # Install Ansible modules
 sudo pip3 install -r requirements-azure.txt
 
-echo "ansible-playbook Configure-ASM-server.yml -e gridpass=$GRIDPASS -e oraclepass=$ORACLEPASS -e rootpass=$ROOTPASS -e swapsize=$SWAPSIZE -e gridurl=$STORAGEURL -e syspass=$SYSPASS -e systempass=$SYSTEMPASS -e monitorpass=$MONITORPASS -e dbname=$DBNAME" >>/home/azureadmin/deployoracle.sh
+echo "ansible-playbook Configure-ASM-server.yml -e gridpass='$GRIDPASS' -e oraclepass='$ORACLEPASS' -e rootpass='$ROOTPASS' -e swapsize='$SWAPSIZE' -e gridurl='$STORAGEURL' -e syspass='$SYSPASS' -e systempass='$SYSTEMPASS' -e monitorpass='$MONITORPASS' -e dbname='$DBNAME'" >>/home/azureadmin/deployoracle.sh
 chown azureadmin /home/azureadmin/deployoracle.sh
 chmod 700 /home/azureadmin/deployoracle.sh
 cp /var/lib/waagent/custom-script/download/0/Configure-ASM-server.yml /home/azureadmin
