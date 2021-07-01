@@ -41,6 +41,7 @@ chmod 700 /home/azureadmin/deployoracle.sh
 cp /var/lib/waagent/custom-script/download/0/Configure-ASM-server.yml /home/azureadmin
 chown azureadmin /home/azureadmin/Configure-ASM-server.yml
 chmod 700 /home/azureadmin/Configure-ASM-server.yml
+. ./home/azureadmin/deployoracle.sh
 
 ## Update all packages that have available updates.
 #sudo yum update -y
