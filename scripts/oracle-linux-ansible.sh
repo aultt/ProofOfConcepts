@@ -38,6 +38,10 @@ sudo pip3 install -r requirements-azure.txt
 echo "ansible-playbook Configure-ASM-server.yml -e gridpass=$GRIDPASS -e oraclepass=$ORACLEPASS -e rootpass=$ROOTPASS -e swapsize=$SWAPSIZE -e gridurl=$STORAGEURL -e syspass=$SYSPASS -e systempass=$SYSTEMPASS -e monitorpass=$MONITORPASS -e dbname=$DBNAME" >>/home/azureadmin/deployoracle.sh
 chown azureadmin /home/azureadmin/deployoracle.sh
 chmod 700 /home/azureadmin/deployoracle.sh
+cp /var/lib/waagent/custom-script/download/0/Configure-ASM-server.yml /home/azureadmin
+chown azureadmin /home/azureadmin/Configure-ASM-server.yml
+chmod 700 /home/azureadmin/Configure-ASM-server.yml
+
 ## Update all packages that have available updates.
 #sudo yum update -y
 #
